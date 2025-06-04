@@ -1,5 +1,3 @@
-import './bootstrap';
-
 // DOM yüklendiğinde çalışacak fonksiyon
 document.addEventListener('DOMContentLoaded', function() {
     initializeAccordion();
