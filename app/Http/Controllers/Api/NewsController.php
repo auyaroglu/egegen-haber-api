@@ -10,6 +10,7 @@ use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
@@ -178,7 +179,6 @@ class NewsController extends Controller {
             $news->update($validatedData);
 
             // Eski görseli sil (yeni görsel yüklendiyse)
-            /** @var \Illuminate\Http\Request $request */
             if ($request->hasFile('image') && $oldImagePath) {
                 $this->imageService->deleteImage($oldImagePath);
             }

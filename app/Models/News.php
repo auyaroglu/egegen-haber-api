@@ -159,6 +159,23 @@ class News extends Model {
 			if (empty($news->published_at) && $news->status === self::STATUS_ACTIVE) {
 				$news->published_at = now();
 			}
+
+			// Summary otomatik oluştur eğer boşsa
+			if (empty($news->summary) && !empty($news->content)) {
+				// Content alanının JSON string olup olmadığını kontrol et
+				$contentText = $news->content;
+
+				// Eğer content JSON string ise decode et
+				if (is_string($contentText) && str_starts_with(trim($contentText), '{')) {
+					$jsonData = json_decode($contentText, true);
+					if (is_array($jsonData) && isset($jsonData['content'])) {
+						$contentText = $jsonData['content'];
+					}
+				}
+
+				$contentText = strip_tags($contentText);
+				$news->summary = Str::limit($contentText, 200);
+			}
 		});
 
 		static::updating(function ($news) {
@@ -170,6 +187,23 @@ class News extends Model {
 			// Status active yapıldığında published_at set et
 			if ($news->isDirty('status') && $news->status === self::STATUS_ACTIVE && empty($news->published_at)) {
 				$news->published_at = now();
+			}
+
+			// Content değiştiğinde summary'i güncelle (eğer summary değiştirilmemişse)
+			if ($news->isDirty('content') && !$news->isDirty('summary')) {
+				// Content alanının JSON string olup olmadığını kontrol et
+				$contentText = $news->content;
+
+				// Eğer content JSON string ise decode et
+				if (is_string($contentText) && str_starts_with(trim($contentText), '{')) {
+					$jsonData = json_decode($contentText, true);
+					if (is_array($jsonData) && isset($jsonData['content'])) {
+						$contentText = $jsonData['content'];
+					}
+				}
+
+				$contentText = strip_tags($contentText);
+				$news->summary = Str::limit($contentText, 200);
 			}
 		});
 
