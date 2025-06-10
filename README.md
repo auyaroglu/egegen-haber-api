@@ -291,7 +291,7 @@ private static function clearGroupCacheWithoutTags(): bool {
 "news_123_with_details"           # Detaylı cache versiyonu
 
 // Database cache pattern'leri
-"laravel_cache_news_*"             # Database cache key pattern'i
+"laravel_cache_news_*"             # Database cache key pattern'i (prefix otomatik)
 ```
 
 ### **🔧 Cache Konfigürasyonu**
@@ -299,16 +299,17 @@ private static function clearGroupCacheWithoutTags(): bool {
 #### **Environment Ayarları**
 ```env
 # Database Cache (Default - Tagging yok)
-CACHE_DRIVER=database
+CACHE_STORE=database
 DB_CACHE_TABLE=cache
+CACHE_PREFIX=laravel_cache_
 
 # Redis Cache (Tagging var)
-CACHE_DRIVER=redis
+CACHE_STORE=redis
 REDIS_HOST=127.0.0.1
 REDIS_PORT=6379
 
 # Memcached Cache (Tagging var)  
-CACHE_DRIVER=memcached
+CACHE_STORE=memcached
 MEMCACHED_HOST=127.0.0.1
 MEMCACHED_PORT=11211
 ```
@@ -478,6 +479,11 @@ public function rules(): array {
             'string',
             'min:50',            // En az 50 karakter
             'max:10000'          // Max 10.000 karakter
+        ],
+        'summary' => [
+            'nullable',
+            'string',
+            'max:500'            // Max 500 karakter özet
         ],
         'image' => [
             'nullable',
@@ -1199,11 +1205,11 @@ composer require intervention/image  # Görsel işleme
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=egegen_haber
+DB_DATABASE=egegenhaber
 DB_USERNAME=root
 DB_PASSWORD=
 
-CACHE_DRIVER=file  # Veya redis
+CACHE_STORE=database  # Veya redis, memcached, file
 SESSION_DRIVER=file
 ```
 
